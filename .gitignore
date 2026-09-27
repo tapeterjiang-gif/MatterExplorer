@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Xcode / DerivedData
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# XcodeGen 生成物（可随时用 `xcodegen generate` 重新生成）
+MatterExplorer.xcodeproj/

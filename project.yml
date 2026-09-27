@@ -1,0 +1,83 @@
+name: MatterExplorer
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "27.0"
+  createIntermediateGroups: true
+  xcodeVersion: "27.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1,2"
+
+targets:
+  MatterExplorer:
+    type: application
+    platform: iOS
+    deploymentTarget: "27.0"
+    sources:
+      - path: Sources
+    dependencies:
+      - sdk: Matter.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.MatterExplorer
+        PRODUCT_NAME: MatterExplorer
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    info:
+      path: Sources/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: MatterExplorer
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        NSLocalNetworkUsageDescription: MatterExplorer 需要访问本地网络，以发现和通信 Matter 设备。
+        NSBonjourServices:
+          - _matter._tcp
+          - _matterc._udp
+          - _matterd._udp
+        NSBluetoothAlwaysUsageDescription: MatterExplorer 需要通过蓝牙为 Matter 设备配网。
+        NSBluetoothPeripheralUsageDescription: MatterExplorer 需要通过蓝牙为 Matter 设备配网。
+        NSThreadNetworkUsageDescription: MatterExplorer 需要访问已保存的 Thread 网络凭证，以完成 Thread 设备配网。
+        ITSAppUsesNonExemptEncryption: false
+
+  # 纯逻辑单元测试（Swift Testing）。app target 的 sources 只含 Sources，
+  # 故仓库根的 Tests/ 不会被 app target 吸入，无需排除规则。
+  MatterExplorerTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "27.0"
+    sources:
+      - path: Tests
+    dependencies:
+      - target: MatterExplorer
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.MatterExplorerTests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MatterExplorer.app/MatterExplorer"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+# 显式声明 scheme：XcodeGen 默认只自动生成 app scheme，不会自动把测试 target
+# 挂进 test action，故这里手写，保证 `xcodebuild test -scheme MatterExplorer` 可用。
+schemes:
+  MatterExplorer:
+    build:
+      targets:
+        MatterExplorer: all
+        MatterExplorerTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: false
+      targets:
+        - MatterExplorerTests
